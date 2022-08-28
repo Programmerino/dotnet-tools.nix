@@ -3,45 +3,55 @@
 
   inputs.flake-utils.url = "github:numtide/flake-utils";
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
+  outputs = {
+    self,
+    nixpkgs,
+    flake-utils,
+  }:
+    flake-utils.lib.eachDefaultSystem (
+      system: let
         pkgs = import nixpkgs {
-            inherit system;
+          inherit system;
         };
 
-        fable-repo = pkgs.stdenv.mkDerivation rec {
+        toolBuilder = name: version: sha256: path: let
+          src = pkgs.stdenv.mkDerivation rec {
+            inherit version;
             dontFetch = true;
             dontStrip = true;
             dontConfigure = true;
             dontPatch = true;
             dontInstall = true;
             dontBuild = true;
-            pname = "fable-repo";
-            version = "3.7.6";
+            pname = "${name}-src";
             src = pkgs.fetchurl {
-                sha256 = "sha256-Ct8CQhdKuvpkoNWH7P7ePxCuMFTKoT8ux3b78xZcLVM=";
-                url = "https://www.nuget.org/api/v2/package/Fable/${version}";
+              inherit sha256;
+              url = "https://www.nuget.org/api/v2/package/${name}/${version}";
             };
             unpackPhase = ''
-                runHook preUnpack
+              runHook preUnpack
 
-                ${pkgs.unzip}/bin/unzip -q $src -d $out
+              ${pkgs.unzip}/bin/unzip -q $src -d $out
 
-                runHook postUnpack
+              runHook postUnpack
             '';
-        };
+          };
+        in
+          pkgs.writeShellApplication {
+            inherit name;
+            text = ''echo ${src}; ${pkgs.dotnet-sdk}/bin/dotnet ${src}/${path} "$@"'';
+          };
 
-        fable = pkgs.writeShellApplication {
-            name = "fable";
-            text = ''${pkgs.dotnet-sdk}/bin/dotnet ${fable-repo}/tools/net5.0/any/fable.dll "$@"'';
-        };
-      in
-      rec {
+        fable = toolBuilder "Fable" "4.0.0-snake-island-alpha-021" "sha256-IlDzYMq5I2wE0Xs6mbqRkExMvUruDcsmAN+/6PD0jio=" "tools/*/any/fable.dll";
+        fantomas = toolBuilder "fantomas" "5.0.0-beta-007" "sha256-wMtUxm9BpNhDnJ4IO4SWO6Ty855siRjtPeozslzfw8s=" "tools/*/any/fantomas.dll";
+        femto = toolBuilder "Femto" "0.13.0" "sha256-yFZTcO+ht+ENeoW2RQGa6HZ43RloS5pp8F7zuoHIfhU=" "tools/*/any/femto.dll";
+      in rec {
         packages.fable = fable;
-        defaultPackage = packages.fable;
-        apps.fable = flake-utils.lib.mkApp { drv = defaultPackage; };
-        defaultApp = apps.fable;
+        packages.fantomas = fantomas;
+        packages.femto = femto;
+        apps.fable = flake-utils.lib.mkApp {drv = packages.fable;};
+        apps.fantomas = flake-utils.lib.mkApp {drv = packages.fantomas;};
+        apps.femto = flake-utils.lib.mkApp {drv = packages.femto;};
       }
     );
 }
