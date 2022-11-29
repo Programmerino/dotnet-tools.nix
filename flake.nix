@@ -42,7 +42,7 @@
             text = ''echo ${src}; ${pkgs.dotnet-sdk}/bin/dotnet ${src}/${path} "$@"'';
           };
 
-        fable = toolBuilder "fable" "4.0.0-theta-016" "sha256-lmWMzpKPSiz7iwxqmm8FlOgzV2Ejaa/8EaRXI+7YBRA=" "tools/*/any/fable.dll";
+        fable = toolBuilder "fable" "4.0.0-theta-018" "sha256-HueBnXTEZ6xkbWgKqTtHoVIZ/erOa+et2nlqU1/tdO4=" "tools/*/any/fable.dll";
         fantomas = toolBuilder "fantomas" "5.0.0-beta-007" "sha256-wMtUxm9BpNhDnJ4IO4SWO6Ty855siRjtPeozslzfw8s=" "tools/*/any/fantomas.dll";
         femto = toolBuilder "Femto" "0.13.0" "sha256-yFZTcO+ht+ENeoW2RQGa6HZ43RloS5pp8F7zuoHIfhU=" "tools/*/any/femto.dll";
       in rec {
