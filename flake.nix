@@ -39,11 +39,11 @@
         in
           pkgs.writeShellApplication {
             inherit name;
-            text = ''echo ${src}; ${pkgs.dotnet-sdk}/bin/dotnet ${src}/${path} "$@"'';
+            text = ''${pkgs.dotnet-sdk}/bin/dotnet ${src}/${path} "$@"'';
           };
 
         fable = toolBuilder "fable" "4.0.0-theta-018" "sha256-HueBnXTEZ6xkbWgKqTtHoVIZ/erOa+et2nlqU1/tdO4=" "tools/*/any/fable.dll";
-        fantomas = toolBuilder "fantomas" "5.0.0-beta-007" "sha256-wMtUxm9BpNhDnJ4IO4SWO6Ty855siRjtPeozslzfw8s=" "tools/*/any/fantomas.dll";
+        fantomas = toolBuilder "fantomas" "5.1.3" "sha256-ua0ugBk+saYTyW7DPeH11/ed4AgG+Asv4jzBOrPAuQo=" "tools/*/any/fantomas.dll";
         femto = toolBuilder "Femto" "0.13.0" "sha256-yFZTcO+ht+ENeoW2RQGa6HZ43RloS5pp8F7zuoHIfhU=" "tools/*/any/femto.dll";
       in rec {
         packages.fable = fable;
